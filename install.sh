@@ -2,7 +2,7 @@
 
 echo "installing Linux Productivity Guardian..."
 
-if[ "$EUID" -ne 0 ] then
+if [ "$EUID" -ne 0 ]; then
 	echo "you need to run this using sudo. type 'sudo install.sh'"
 	exit 1
 fi
