@@ -1,63 +1,45 @@
-#LINUX PRODUCTIVITY GUARDIAN
+##  # LINUX PRODUCTIVITY GUARDIAN
 
-A Dota 2 removal service created for fun and practice 
-(just change the paths and it’ll work for any other game)
+A Dota 2 removal service created for fun and practice. 
+(Just change the paths and it’ll work for any other game).
 
-#how does it work
+## # how does it work
 The project deploys a background service that works as follows: 
-1. checks for the presence of game files in Steam every 10 minutes (the interval can be adjusted)
-2. upon detection Dota 2:
- * Forse-closes the steam process (pkill)
- * Permanently deletes the game folder and installation man (rm -rf)
- * Sends a systm notification via 'notify-send'
-3. The service is set to restart automatically; you can disable it, but it’s a bit
-   more complicated than just running `pkill`.
+1. Checks for the presence of game files in Steam every 10 minutes (the interval can be adjusted).
+2. Upon detection of Dota 2:
+    * **Force-closes** the steam process (`pkill`).
+    * **Permanently deletes** the game folder and installation manifests (`rm -rf`).
+    * **Sends a system notification** via `notify-send`.
+3. The service is set to restart automatically; you can disable it, but it’s a bit more complicated than just running `pkill`.
 
-#automatic installation
+
+
+## # automatic installation
 ```bash
-git clone [https://github.com/KachanArtmee/linux-productivity-guardian.git](https://github.com/KachanArtmee/linux-productivity-guardian.git)
+git clone https://github.com/KachanArtmee/linux-productivity-guardian.git
 cd linux-productivity-guardian
 chmod +x install.sh
-sudo ./install.sh ```
+sudo ./install.sh```
 
-#manual installation
+## # manual installation
 If you don't trust scripts or just want to do it yourself:
 
-1. Configure the Service
-Open systemd/productivity.service and find the line User=USER.
-Replace USER with your actual username (run whoami if you've forgotten who you are).
+### 1. Configure the Service
+Open `systemd/productivity.service` and find the line `User=USER`. 
+Replace `USER` with your actual username (run `whoami` if you've forgotten who you are).
 
-2.Deploy Files
-
+### 2. Deploy Files
+```bash
+# Move script to bin
 sudo cp scripts/uninstall-dota.sh /usr/local/bin/focus-enforcer
 sudo chmod +x /usr/local/bin/focus-enforcer
 
+# Copy service file
 sudo cp systemd/productivity.service /etc/systemd/system/
 
 3. Activate the Guardian
-
+Bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now productivity.service
 
-customization
-Interval: Change the sleep 600 value in scripts/uninstall-dota.sh (it's in seconds).
-
-Steam Path: If your Steam library is in a weird place, update the dota_pth variable in the script.
-
-Notification: Feel free to change the text in the notify-send command to something more aggressive.
-
-requirements
-OS with systemd (Arch Linux, CachyOS, etc.)
-
-libnotify (for the pop-up alerts)
-
-Steam installed in the default directory
-
-uninstallation
-If you've regained your self-control and want the game back:
-
-sudo systemctl disable --now productivity.service
-sudo rm /etc/systemd/system/productivity.service
-sudo rm /usr/local/bin/focus-enforcer
-
-
+and etc
