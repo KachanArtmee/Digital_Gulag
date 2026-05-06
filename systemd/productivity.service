@@ -1,0 +1,15 @@
+#Please read READ.ME
+[Unit]
+Description=Fun Productivity Guardian 
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/focus-enforcer
+Restart=always
+RestartSec=10
+#in the USER field, enter ur user(u can find out ur user by running whoami)
+User=USER
+
+[Install]
+WantedBy=default.target
