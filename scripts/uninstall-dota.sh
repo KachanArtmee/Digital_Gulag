@@ -27,6 +27,27 @@ CRITICAL_SYSTEM_PATHS=(
     "/home"
 )
 
+check_dependencies() {
+    local missing_critical=false
+
+    for cmd in logger pkill; do
+        if ! command -v "$cmd" &>/dev/null; then
+            echo "Ошибка: Не найдена критическая системная команда: $cmd" >&2
+            missing_critical=true
+        fi
+    done
+
+    if [ "$missing_critical" = true ]; then
+        exit 1
+    fi
+
+    if ! command -v notify-send &>/dev/null; then
+        HAS_NOTIFY=false
+    else
+        HAS_NOTIFY=true
+    fi
+}
+
 log_message() {
     local level="$1"
     local message="$2"
@@ -95,6 +116,8 @@ is_path_safe() {
     return 0
 }
 
+check_dependencies
+
 if validate_config "$CONFIG_FILE"; then
     source "$CONFIG_FILE"
     log_message "INFO" "Guardian started with user config. Mode: $MODE, Interval: $CHECK_INTERVAL"
@@ -120,8 +143,11 @@ while true; do
                 log_message "INFO" "Target detected: $actual_path [Mode: $MODE]"
                 
                 if [ "$MODE" != "dry-run" ]; then
-                    rm -rf "$actual_path"
-                    log_message "INFO" "Target successfully deleted: $actual_path"
+                    if rm -rf "$actual_path"; then
+                        log_message "INFO" "Target successfully deleted: $actual_path"
+                    else
+                        log_message "ERROR" "Failed to delete target: $actual_path"
+                    fi
                 else
                     log_message "DRY-RUN" "Skipped deletion of: $actual_path"
                 fi
@@ -154,7 +180,7 @@ while true; do
     done
 
     if [[ "$FILES_TRIGGERED" = true || "$PROCESSES_TRIGGERED" = true ]]; then
-        if [[ "$MODE" != "silent" && "$MODE" != "dry-run" ]]; then
+        if [[ "$MODE" != "silent" && "$MODE" != "dry-run" && "$HAS_NOTIFY" = true ]]; then
             notify-send "Productivity Guardian" "Запрещенная активность обнаружена и пресечена!" --icon=dialog-warning
         fi
     fi
