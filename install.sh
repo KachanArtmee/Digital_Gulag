@@ -1,24 +1,35 @@
 #!/bin/bash
 
-echo "installing Linux Productivity Guardian..."
+echo "Installing Linux Productivity Guardian..."
 
 if [ "$EUID" -ne 0 ]; then
-	echo "you need to run this using sudo. type 'sudo install.sh'"
-	exit 1
+    echo "Error: You need to run this using sudo. Type 'sudo ./install.sh'" >&2
+    exit 1
 fi
 
 user_real=${SUDO_USER:-$USER}
+user_home=$(eval echo "~$user_real")
 
-echo "start installing..."
+echo "Start installing..."
 
-cp scripts/uninstall-dota.sh /usr/local/bin/focus-enforcer
-chmod  +x /usr/local/bin/focus-enforcer
+cp scripts/guardian.sh /usr/local/bin/productivity-guardian
+chmod +x /usr/local/bin/productivity-guardian
 
-cp systemd/productivity.service /etc/systemd/system/
+if [ ! -f "config/guardian.conf" ] && [ -f "config/guardian.conf.example" ]; then
+    cp config/guardian.conf.example config/guardian.conf
+    chown "$user_real":"$user_real" config/guardian.conf
+    echo "Created default config from example template."
+fi
 
-sed -i "s/User=USER/User=$user_real/" /etc/systemd/system/productivity.service
+if [ -f "systemd/productivity-guardian.service" ]; then
+    cp systemd/productivity-guardian.service /etc/systemd/system/
+else
+    cp systemd/productivity.service /etc/systemd/system/productivity-guardian.service 2>/dev/null || true
+fi
+
+sed -i "s/User=USER/User=$user_real/" /etc/systemd/system/productivity-guardian.service
 
 systemctl daemon-reload
-systemctl enable --now productivity.service
+systemctl enable --now productivity-guardian.service
 
-echo "Installation complete. Thank u for ur support"
+echo "Installation complete. Thank you for your support!"
