@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE="$(dirname "$0")/../config/guardian.conf"
+VERSION="v1.3"
 
 MODE="dry-run"
 CHECK_INTERVAL=600
@@ -120,7 +121,7 @@ check_dependencies
 
 if validate_config "$CONFIG_FILE"; then
     source "$CONFIG_FILE"
-    log_message "INFO" "Guardian started with user config. Mode: $MODE, Interval: $CHECK_INTERVAL"
+    log_message "INFO" "Guardian $VERSION started with user config. Mode: $MODE, Interval: $CHECK_INTERVAL"
 else
     log_message "CRITICAL" "Config at $CONFIG_FILE is missing or corrupted on startup! Using safe defaults. Mode: $MODE, Interval: $CHECK_INTERVAL"
 fi
