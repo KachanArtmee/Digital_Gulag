@@ -7,6 +7,26 @@ CHECK_INTERVAL=600
 BAD_PATHS=()
 BAD_PROCESSES=()
 
+CRITICAL_SYSTEM_PATHS=(
+    "/"
+    "/etc"
+    "/boot"
+    "/root"
+    "/bin"
+    "/sbin"
+    "/lib"
+    "/lib64"
+    "/usr"
+    "/usr/bin"
+    "/usr/sbin"
+    "/usr/lib"
+    "/var"
+    "/proc"
+    "/sys"
+    "/dev"
+    "/home"
+)
+
 log_message() {
     local level="$1"
     local message="$2"
@@ -54,11 +74,17 @@ is_path_safe() {
         return 1
     fi
     
-    if [ "$p" == "/" ] || [ "$p" == "$HOME" ] || [ "$p" == "$USER" ]; then
+    if [ ${#p} -le 5 ]; then
         return 1
     fi
-    
-    if [ ${#p} -le 5 ]; then
+
+    for sys_path in "${CRITICAL_SYSTEM_PATHS[@]}"; do
+        if [[ "$p" == "$sys_path" ]] || [[ "$p" == "$sys_path/" ]]; then
+            return 1
+        fi
+    done
+
+    if [[ "$p" == "$HOME" ]] || [[ "$p" == "$HOME/" ]]; then
         return 1
     fi
     
