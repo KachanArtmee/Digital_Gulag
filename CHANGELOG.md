@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.3.0] - Service Polish and Documentation Preparation
+
+### Added
+
+* Dependency checks for required system commands
+* Optional desktop notification support
+* Critical system paths denylist
+* Independent process monitoring
+* Independent file and directory monitoring
+* Safe default configuration fallback
+* Example configuration file
+* Improved project structure
+
+### Changed
+
+* Process monitoring no longer depends on forbidden file detection
+* `silent` mode now performs actions without desktop notifications
+* Startup configuration is now validated before being loaded
+* Deletion result is now checked and logged
+* Notification is skipped automatically if `notify-send` is unavailable
+
+### Security
+
+* Added denylist for critical Linux system paths
+* Improved protection against accidental destructive configuration
+* Restricted deletion targets to paths inside the user's home directory
+
+### Notes
+
+This release prepares the Bash version of Productivity Guardian for proper usage as a local Linux service.
+
+
+---
+
 ## [1.2.0] - Safety and Reliability
 
 ### Added
