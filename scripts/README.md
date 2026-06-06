@@ -1,34 +1,135 @@
-```markdown
-# Linux Productivity Guardian
+# Productivity Guardian
 
-[![Linux](https://img.shields.io/badge/OS-Linux-orange.svg)](https://www.linux.org/)
-[![Distro](https://img.shields.io/badge/Distro-Arch%20%7C%20CachyOS-blue.svg)](https://archlinux.org/)
+Productivity Guardian is a Linux daemon written in Bash that automatically detects and removes unwanted software from the system.
 
-**Linux Productivity Guardian** — это системная служба для Linux (Arch Linux / CachyOS), предназначенная для автоматизации удаления отвлекающего программного обеспечения. Проект создан для фана, практики и поддержания фокуса на рабочих задачах.
+The project started as a simple script that deleted Dota 2 whenever it appeared on the machine and is gradually evolving into a full DevOps learning project.
 
----
-
-## Возможности
-
-* **Автоматизация**: Автоматическая проверка и удаление заданного софта (например, *Dota 2*).
-* **Интеграция с Systemd**: Работает как фоновая служба, обеспечивая постоянное соблюдение правил продуктивности.
-* **Концентрация на важном**: Помогает устранить «пожирателей времени», чтобы вы могли сосредоточиться на учебе и проектах.
+Current version: **v1.1.0**
 
 ---
 
-## Установка
+## Features
 
-### 1. Автоматическая установка (рекомендуется)
+### File and Directory Monitoring
 
-Просто склонируйте репозиторий и запустите готовый скрипт:
+The daemon periodically scans configured paths and removes detected files or directories.
 
-```bash
-# Клонирование репозитория
-git clone [https://github.com/KachanArtmee/linux-productivity-guardian.git](https://github.com/KachanArtmee/linux-productivity-guardian.git)
+### Process Monitoring
 
-# Переход в директорию
-cd linux-productivity-guardian
+Configured processes can be automatically terminated when forbidden software is detected.
 
-# Запуск установщика
-chmod +x install.sh
-./install.sh
+### Configuration File
+
+Behavior is controlled through an external configuration file.
+
+No script modifications are required to:
+
+* change monitored paths
+* change monitored processes
+* change scan interval
+* change operating mode
+
+### Runtime Configuration Reload
+
+The configuration file is reloaded during every scan cycle.
+
+Changes take effect without restarting the service.
+
+### Desktop Notifications
+
+The daemon can notify the user when a violation is detected.
+
+### systemd Integration
+
+Designed to run as a persistent Linux service.
+
+---
+
+## Operating Modes
+
+### aggressive
+
+* Remove forbidden files and directories
+* Kill forbidden processes
+* Show notifications
+
+### silent
+
+* Remove forbidden files and directories
+* Skip notifications
+
+---
+
+## Example Use Cases
+
+* Block Steam games
+* Prevent installation of distracting software
+* Automatically remove unwanted files
+* Practice Linux and Bash automation
+
+---
+
+## Project Structure
+
+project/
+
+├── config/
+
+│   └── guardian.conf
+
+├── scripts/
+
+│   └── guardian.sh
+
+├── systemd/
+
+│   └── productivity-guardian.service
+
+├── CHANGELOG.md
+
+└── README.md
+
+---
+
+## Technologies Used
+
+* Bash
+* Linux
+* systemd
+
+---
+
+## Roadmap
+
+### v1.2.0
+
+* Logging
+* Dry-run mode
+* Safer deletion logic
+* Configuration validation
+
+### v2.0.0
+
+* Docker support
+* Event collection
+
+### v3.0.0
+
+* Python implementation
+* Telegram notifications
+* REST API
+
+### v4.0.0
+
+* Kubernetes deployment
+* Monitoring stack
+
+---
+
+## Motivation
+
+The primary goal of this project is educational.
+
+Each new version introduces additional DevOps concepts and technologies while keeping a single evolving codebase.
+
+This allows the project to grow from a small Bash daemon into a complete infrastructure platform.
