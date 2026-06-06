@@ -95,7 +95,7 @@ is_path_safe() {
     return 0
 }
 
-iif validate_config "$CONFIG_FILE"; then
+if validate_config "$CONFIG_FILE"; then
     source "$CONFIG_FILE"
     log_message "INFO" "Guardian started with user config. Mode: $MODE, Interval: $CHECK_INTERVAL"
 else
@@ -139,7 +139,7 @@ while true; do
                 if [ "$MODE" == "soft" ]; then
                     pkill -f "$process" 2>/dev/null
                     log_message "INFO" "Sent SIGTERM to process: $process"
-                elif [ "$MODE" == "aggressive" ]; then
+                elif [[ "$MODE" == "aggressive" || "$MODE" == "silent" ]]; then
                     pkill -f "$process" 2>/dev/null
                     sleep 1
                     if pkill -0 -f "$process" 2>/dev/null; then
