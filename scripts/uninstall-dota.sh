@@ -109,7 +109,8 @@ while true; do
         log_message "WARN" "Config is invalid or corrupted. Keeping previous stable settings."
     fi
 
-    TRIGGERED=false
+    FILES_TRIGGERED=false
+    PROCESSES_TRIGGERED=false
 
     for path in "${BAD_PATHS[@]}"; do
         actual_path=$(expand_path "$path")
@@ -124,36 +125,37 @@ while true; do
                 else
                     log_message "DRY-RUN" "Skipped deletion of: $actual_path"
                 fi
-                TRIGGERED=true
+                FILES_TRIGGERED=true
             else
                 log_message "CRITICAL" "Dangerous path skipped from deletion: $actual_path"
             fi
         fi
     done
 
-    if [ "$TRIGGERED" = true ]; then
-        for process in "${BAD_PROCESSES[@]}"; do
-            if pkill -0 -f "$process" 2>/dev/null; then
-                log_message "INFO" "Target process alive: $process [Mode: $MODE]"
-                
-                if [ "$MODE" == "soft" ]; then
-                    pkill -f "$process" 2>/dev/null
-                    log_message "INFO" "Sent SIGTERM to process: $process"
-                elif [[ "$MODE" == "aggressive" || "$MODE" == "silent" ]]; then
-                    pkill -f "$process" 2>/dev/null
-                    sleep 1
-                    if pkill -0 -f "$process" 2>/dev/null; then
-                        pkill -9 -f "$process" 2>/dev/null
-                        log_message "WARN" "Sent SIGKILL to stubborn process: $process"
-                    fi
-                elif [ "$MODE" == "dry-run" ]; then
-                    log_message "DRY-RUN" "Skipped killing process: $process"
+    for process in "${BAD_PROCESSES[@]}"; do
+        if pkill -0 -f "$process" 2>/dev/null; then
+            log_message "INFO" "Target process alive: $process [Mode: $MODE]"
+            
+            if [ "$MODE" == "soft" ]; then
+                pkill -f "$process" 2>/dev/null
+                log_message "INFO" "Sent SIGTERM to process: $process"
+            elif [[ "$MODE" == "aggressive" || "$MODE" == "silent" ]]; then
+                pkill -f "$process" 2>/dev/null
+                sleep 1
+                if pkill -0 -f "$process" 2>/dev/null; then
+                    pkill -9 -f "$process" 2>/dev/null
+                    log_message "WARN" "Sent SIGKILL to stubborn process: $process"
                 fi
+            elif [ "$MODE" == "dry-run" ]; then
+                log_message "DRY-RUN" "Skipped killing process: $process"
             fi
-        done
+            PROCESSES_TRIGGERED=true
+        fi
+    done
 
+    if [[ "$FILES_TRIGGERED" = true || "$PROCESSES_TRIGGERED" = true ]]; then
         if [[ "$MODE" != "silent" && "$MODE" != "dry-run" ]]; then
-            notify-send "Productivity Guardian" "Запрещенный софт обнаружен и уничтожен!" --icon=dialog-warning
+            notify-send "Productivity Guardian" "Запрещенная активность обнаружена и пресечена!" --icon=dialog-warning
         fi
     fi
 
