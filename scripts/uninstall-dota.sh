@@ -95,13 +95,12 @@ is_path_safe() {
     return 0
 }
 
-if [ ! -f "$CONFIG_FILE" ]; then
-    log_message "ERROR" "Initial configuration file not found at $CONFIG_FILE"
-    exit 1
+iif validate_config "$CONFIG_FILE"; then
+    source "$CONFIG_FILE"
+    log_message "INFO" "Guardian started with user config. Mode: $MODE, Interval: $CHECK_INTERVAL"
+else
+    log_message "CRITICAL" "Config at $CONFIG_FILE is missing or corrupted on startup! Using safe defaults. Mode: $MODE, Interval: $CHECK_INTERVAL"
 fi
-
-source "$CONFIG_FILE"
-log_message "INFO" "Guardian started. Mode: $MODE, Interval: $CHECK_INTERVAL"
 
 while true; do
     if validate_config "$CONFIG_FILE"; then
