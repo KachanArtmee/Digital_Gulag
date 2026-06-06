@@ -1,135 +1,238 @@
 # Productivity Guardian
 
-Productivity Guardian is a Linux daemon written in Bash that automatically detects and removes unwanted software from the system.
+Productivity Guardian is a Linux daemon written in Bash that automatically detects and suppresses unwanted software, files and processes.
 
-The project started as a simple script that deleted Dota 2 whenever it appeared on the machine and is gradually evolving into a full DevOps learning project.
+The project started as a joke script that deleted Dota 2 whenever it appeared on the system. It has since evolved into a long-term DevOps learning project focused on Linux automation, service management, infrastructure and observability.
 
-Current version: **v1.1.0**
+Current version: **v1.3.0**
 
 ---
 
 ## Features
 
-### File and Directory Monitoring
+### File Monitoring
 
-The daemon periodically scans configured paths and removes detected files or directories.
+Periodically scans configured files and directories.
+
+Detected targets can be removed automatically.
 
 ### Process Monitoring
 
-Configured processes can be automatically terminated when forbidden software is detected.
+Monitors configured processes independently from file detection.
 
-### Configuration File
+Depending on the selected mode, processes can be:
 
-Behavior is controlled through an external configuration file.
+* terminated gracefully
+* forcefully killed
+* ignored in dry-run mode
 
-No script modifications are required to:
+### Configuration Reload
 
-* change monitored paths
-* change monitored processes
-* change scan interval
-* change operating mode
+Configuration is reloaded during every scan cycle.
 
-### Runtime Configuration Reload
+Changes are applied without restarting the daemon.
 
-The configuration file is reloaded during every scan cycle.
+### Logging
 
-Changes take effect without restarting the service.
+The daemon writes logs to journald using the `productivity-guardian` tag.
 
-### Desktop Notifications
+Available log levels:
 
-The daemon can notify the user when a violation is detected.
+* INFO
+* WARN
+* ERROR
+* CRITICAL
+* DRY-RUN
+
+### Safe Defaults
+
+If configuration validation fails during startup:
+
+* the daemon does not crash
+* safe default settings are used
+
+### Dependency Validation
+
+Required system utilities are checked during startup.
 
 ### systemd Integration
 
-Designed to run as a persistent Linux service.
+Designed to run as a persistent Linux user service.
 
 ---
 
 ## Operating Modes
 
+### dry-run
+
+Recommended default mode.
+
+* Detect targets
+* Log actions
+* Do not delete files
+* Do not kill processes
+
+### soft
+
+* Remove forbidden files
+* Send SIGTERM to processes
+* Show notifications
+
 ### aggressive
 
-* Remove forbidden files and directories
-* Kill forbidden processes
+* Remove forbidden files
+* Send SIGTERM
+* Escalate to SIGKILL if necessary
 * Show notifications
 
 ### silent
 
-* Remove forbidden files and directories
-* Skip notifications
+* Remove forbidden files
+* Kill processes
+* Disable desktop notifications
 
 ---
 
-## Example Use Cases
+## Configuration
 
-* Block Steam games
-* Prevent installation of distracting software
-* Automatically remove unwanted files
-* Practice Linux and Bash automation
+Example:
+
+* scan interval
+* monitored paths
+* monitored processes
+* operating mode
+
+Configuration file:
+
+configs/guardian.conf
+
+Safe example configuration:
+
+configs/guardian.conf.example
 
 ---
 
 ## Project Structure
 
-project/
+linux-productivity-guardian/
 
-├── config/
-
-│   └── guardian.conf
+├── configs/
 
 ├── scripts/
 
-│   └── guardian.sh
-
 ├── systemd/
-
-│   └── productivity-guardian.service
 
 ├── CHANGELOG.md
 
-└── README.md
+├── README.md
+
+└── install.sh
 
 ---
 
-## Technologies Used
+## Running Manually
 
-* Bash
-* Linux
-* systemd
+The daemon can be started directly from the terminal for testing purposes.
+
+Dry-run mode is recommended during initial setup.
+
+---
+
+## Running as a Service
+
+The project is intended to be used as a systemd user service.
+
+The service automatically starts the guardian in the background and can be configured to launch on login.
+
+---
+
+## Logs
+
+Logs are written through journald.
+
+Useful events include:
+
+* configuration validation
+* target detection
+* file deletion
+* process termination
+* dry-run actions
+* security warnings
+
+---
+
+## Security Features
+
+The daemon contains several safety mechanisms:
+
+* configuration validation
+* critical path protection
+* home directory restriction
+* dangerous path detection
+* safe startup defaults
+
+Protected paths include:
+
+* /
+* /etc
+* /usr
+* /var
+* /proc
+* /sys
+* /dev
+* /home
+
+---
+
+## Known Limitations
+
+* Linux only
+* Bash implementation
+* Pattern-based process matching
+* No central event storage
+* No metrics endpoint
 
 ---
 
 ## Roadmap
 
-### v1.2.0
-
-* Logging
-* Dry-run mode
-* Safer deletion logic
-* Configuration validation
-
 ### v2.0.0
 
 * Docker support
-* Event collection
+* Containerized deployment
+* Multi-service architecture
 
 ### v3.0.0
 
-* Python implementation
+* Python rewrite
 * Telegram notifications
 * REST API
 
 ### v4.0.0
 
 * Kubernetes deployment
+* GitLab CI/CD
+* Automated releases
+
+### v5.0.0
+
+* Prometheus metrics
+* Grafana dashboards
 * Monitoring stack
 
 ---
 
-## Motivation
+## Learning Goals
 
-The primary goal of this project is educational.
+This project is used to practice:
 
-Each new version introduces additional DevOps concepts and technologies while keeping a single evolving codebase.
+* Linux
+* Bash
+* systemd
+* Docker
+* CI/CD
+* Kubernetes
+* Monitoring
+* Infrastructure as Code
 
-This allows the project to grow from a small Bash daemon into a complete infrastructure platform.
+while continuously evolving a single real-world codebase.
