@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE="$(dirname "$0")/../guardian.conf"
+CONFIG_FILE="$(dirname "$0")/../config/guardian.conf"
 
 MODE="dry-run"
 CHECK_INTERVAL=600

@@ -1,0 +1,12 @@
+MODE="dry-run"
+CHECK_INTERVAL=300
+
+BAD_PATHS=(
+    "~/Desktop/dota2.desktop"
+    "~/.local/share/Steam/steamapps/common/dota 2 beta"
+)
+
+BAD_PROCESSES=(
+    "dota2"
+    "steam"
+)
